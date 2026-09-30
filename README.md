@@ -1,96 +1,245 @@
-A  hackathon website for Hack for Good, a Nexus (Coding Ninjas ITER) club hackathon. The website presents the event, challenges/tracks, timeline, prizes, FAQs, and a registration flow for participating teams.
+⚡ Hack for Good
 
-The project is intentionally split into a highly visual frontend and a small backend whose only responsibility is handling registration data and storing it in a database.
+Build. Solve. Impact.
 
-Project Goals
+A cinematic, frontend-heavy website for Hack for Good, a Nexus (Coding Ninjas ITER) hackathon where student teams build software for real NGO problems.
 
-Create a visually distinctive, cinematic hackathon website.
+The project combines a highly interactive visual experience with a focused registration backend that safely stores team registrations in a PostgreSQL database.
 
-Use scroll-driven storytelling rather than a generic template layout.
+<div align="center">
 
-Keep the frontend animation-rich while maintaining good performance.
+🎨 Frontend-first • 🎞️ Motion-driven • 📝 Registration-ready
 
-Provide a reliable registration form backed by a database.
+React + TypeScript + GSAP + Lenis + Node.js + Express + PostgreSQL
 
-Keep the codebase easy for multiple frontend and backend contributors to work on.
+</div>
 
-Tech Stack
+✨ What is Hack for Good?
+
+Hack for Good is designed around one simple idea:
+
+Technology should solve problems that matter.
+
+The website introduces the event, presents its challenges and tracks, explains how the hackathon works, showcases prizes and FAQs, and provides a registration flow for participating teams.
+
+The experience is intentionally visual and motion-led instead of looking like a conventional hackathon template.
+
+🎯 Project Goals
+
+Build a memorable first impression through a cinematic hero experience.
+
+Use scroll-driven storytelling and purposeful animation.
+
+Keep the interface dark, editorial, and visually refined.
+
+Make the information architecture simple and easy to scan.
+
+Provide a reliable team-registration flow.
+
+Keep the backend small and focused on the actual requirement: registration + database storage.
+
+Make the repository easy for a multi-person team to contribute to.
+
+🧩 Tech Stack
 
 Frontend
 
+Technology
+
+Purpose
+
 React
+
+UI and component architecture
 
 Vite
 
+Development and build tooling
+
 TypeScript
+
+Type-safe frontend code
 
 Tailwind CSS
 
+Utility-based styling
+
 GSAP
+
+Animation engine
 
 GSAP ScrollTrigger
 
+Scroll-based animation and reveals
+
 Lenis
+
+Smooth page scrolling
 
 React Hook Form
 
+Registration form state
+
 Zod
 
-Fetch API or Axios
+Client-side validation
 
-Lucide React where icons are actually needed
+Fetch / Axios
+
+API communication
+
+Lucide React
+
+Lightweight icons where needed
 
 Backend
 
+Technology
+
+Purpose
+
 Node.js
+
+Backend runtime
 
 Express.js
 
+REST API
+
 TypeScript
+
+Type-safe backend code
 
 Zod
 
+Server-side request validation
+
 CORS
+
+Controlled frontend/API access
 
 Helmet
 
+HTTP security headers
+
 express-rate-limit
+
+Basic request protection
 
 Database
 
+Technology
+
+Purpose
+
 PostgreSQL
+
+Registration data storage
 
 Supabase
 
-The backend is intentionally small. There are no submission APIs, admin dashboard APIs, payment systems, or other backend features in the current scope.
+Hosted PostgreSQL database
 
-Development / Quality
+Current backend scope
 
-Git
+The backend is intentionally minimal.
 
-GitHub
+Registration Form
+       ↓
+POST /api/register
+       ↓
+Express
+       ↓
+Validate + duplicate check
+       ↓
+PostgreSQL / Supabase
+       ↓
+Success / Error response
 
-ESLint
+No extra backend systems are required unless the project scope changes.
 
-Prettier
+🎬 Visual Direction
 
-Vitest
+Hack for Good uses a dark cinematic editorial aesthetic with warm terracotta/orange accents.
 
-Playwright
+Design principles
 
-GitHub Actions
+strong typography
 
-Deployment
+large-scale imagery
 
-Frontend: Vercel
+generous negative space
 
-Backend: Render or Railway
+thin borders
 
-Database: Supabase
+restrained accent color
 
-Repository Structure
+cinematic artwork
+
+subtle micro-interactions
+
+scroll-driven storytelling
+
+Avoid
+
+generic SaaS layouts
+
+excessive glassmorphism
+
+neon cyberpunk styling
+
+random gradients
+
+decorative clutter
+
+unnecessary 3D effects
+
+fake statistics or testimonials
+
+animation for the sake of animation
+
+The artwork and typography should carry the experience.
+
+🌀 Motion System
+
+Motion is a core part of the frontend.
+
+Lenis
+
+Responsible for:
+
+Smooth page scrolling
+
+GSAP + ScrollTrigger
+
+Responsible for:
+
+Hero entrance
+↓
+Section reveals
+↓
+Scroll-linked motion
+↓
+Parallax
+↓
+Pinned storytelling
+↓
+Timeline animation
+↓
+Micro-interactions
+
+Motion rule
+
+Motion should communicate hierarchy, not compete with the content.
+
+Large visual movements are reserved for storytelling sections. Most UI interactions remain subtle.
+
+The project also respects prefers-reduced-motion.
+
+🏗️ Project Architecture
 
 hack-for-good/
+│
 ├── frontend/
 │   ├── src/
 │   │   ├── components/
@@ -114,7 +263,6 @@ hack-for-good/
 │   │   ├── middleware/
 │   │   ├── schemas/
 │   │   ├── db/
-│   │   ├── types/
 │   │   └── server.ts
 │   ├── .env.example
 │   └── package.json
@@ -122,113 +270,37 @@ hack-for-good/
 ├── DESIGN.md
 └── README.md
 
-Website Sections
+🖥️ Website Sections
 
-The current one-page experience is organized around:
+The current website is structured around:
 
 Navbar
-
+   ↓
 Hero
-
+   ↓
 About
-
+   ↓
 Challenges / Tracks
-
+   ↓
 Timeline / How It Works
-
+   ↓
 Prizes
-
+   ↓
 FAQ
-
+   ↓
 Registration
-
+   ↓
 Footer
 
-The exact content should always come from confirmed organizer information. Do not add invented dates, prize amounts, participant counts, sponsors, judges, testimonials, or other social-proof data.
+Each section should remain modular so contributors can work without unnecessary conflicts.
 
-Frontend Animation Architecture
+📝 Registration System
 
-The website uses two separate responsibilities:
+The registration system is intentionally simple.
 
-Lenis
+Registration data
 
-Lenis is responsible for smooth page scrolling.
-
-GSAP + ScrollTrigger
-
-GSAP and ScrollTrigger are responsible for visual animation:
-
-Hero entrance animation
-
-Scroll reveals
-
-Chapter transitions
-
-Subtle parallax
-
-Pinned storytelling sections
-
-Timeline animation
-
-CTA and interaction motion
-
-Do not introduce another smooth-scroll library.
-
-Do not create multiple Lenis instances.
-
-Do not connect background-video playback position to scroll progress.
-
-Registration Flow
-
-Registration Form
-       ↓
-React Hook Form
-       ↓
-Zod validation
-       ↓
-POST /api/register
-       ↓
-Express backend
-       ↓
-Server-side validation
-       ↓
-Duplicate check
-       ↓
-Supabase / PostgreSQL
-       ↓
-Success response
-
-The registration API should:
-
-validate all submitted fields on the server
-
-reject invalid requests
-
-reject duplicate team names where required
-
-reject duplicate emails where required
-
-silently ignore/reject bot submissions using the hidden website trap field
-
-apply basic rate limiting
-
-return clear HTTP responses
-
-Expected response classes:
-
-201 — registration saved
-
-400 — invalid data
-
-409 — duplicate registration/team/email
-
-429 — rate limit exceeded
-
-Registration Data
-
-The form should stay aligned with the agreed registration contract.
-
-Typical fields:
+The form can collect:
 
 team name
 
@@ -250,61 +322,98 @@ consent
 
 hidden website spam-trap field
 
-Do not add new required fields without agreement between frontend and backend contributors.
+API
 
-Local Development
+POST /api/register
 
-Frontend
+Expected responses
+
+Status
+
+Meaning
+
+201
+
+Registration saved
+
+400
+
+Invalid request data
+
+409
+
+Duplicate registration/team/email
+
+429
+
+Too many requests
+
+Validation rules
+
+Server-side validation must always happen even when the frontend already validates the form.
+
+Never trust browser validation alone.
+
+🛠️ Local Development
+
+1. Clone
+
+git clone https://github.com/YOUR-USERNAME/hack-for-good.git
+cd hack-for-good
+
+2. Frontend
 
 cd frontend
 npm install
 npm run dev
 
-Backend
+3. Backend
+
+Open another terminal:
 
 cd backend
 npm install
 npm run dev
 
-The frontend should call the backend through the configured API base URL.
+🔐 Environment Variables
 
-Keep secrets only in environment variables. Never commit .env files containing credentials.
-
-Environment Variables
-
-Example frontend variables:
+Frontend
 
 VITE_API_BASE_URL=http://localhost:5000
 
-Example backend variables:
+Backend
 
 PORT=5000
 DATABASE_URL=your_database_connection
 FRONTEND_ORIGIN=http://localhost:5173
 
-Use .env.example to document required variables without exposing real credentials.
+Use .env.example for documentation.
 
-Git Workflow
+Never commit real secrets.
 
-Use the fork + branch + pull request workflow.
+🌿 Git Workflow
 
-First setup
+We use the fork → branch → pull request workflow.
 
-git clone https://github.com/YOUR-USERNAME/hack-for-good.git
-cd hack-for-good
-npm install
-git remote add upstream https://github.com/LEAD-USERNAME/hack-for-good.git
-git remote -v
-
-Before starting a task
+Start from latest main
 
 git checkout main
 git pull upstream main
+
+Create a feature branch
+
 git checkout -b feature/<task-name>
 
-Commit
+Examples:
 
-Keep commits small and clear:
+feature/navbar-footer
+feature/hero
+feature/about
+feature/tracks
+feature/register-page
+backend/api
+
+Commit
 
 git status
 git add <your-files>
@@ -313,88 +422,157 @@ git push origin feature/<task-name>
 
 Then open a pull request.
 
-Rules
+📌 Contribution Rules
 
-Do not push directly to main.
+Do
 
-One branch per task.
+keep commits small and focused
 
-Change only the files needed for your task.
+work only in your assigned area
 
-Do not commit node_modules.
+test on desktop and mobile
 
-Do not commit secrets or real .env files.
+check the browser console
 
-Check desktop and mobile before opening a pull request.
+keep components reusable
 
-Make sure the browser console has no red errors.
+communicate before changing shared files
 
-Contribution Ownership
+open a pull request for every task
 
-The team guide currently divides work between:
+Don't
+
+push directly to main
+
+commit node_modules
+
+commit .env
+
+commit API keys or passwords
+
+rewrite another contributor's section without coordination
+
+add unrelated refactors to a feature PR
+
+👥 Team Structure
+
+The current team guide divides the work into frontend and backend ownership.
 
 Frontend
 
-Foundation / shared setup
-
-Navbar / Footer
-
-Hero
-
-About
-
-Tracks / How It Works
-
-Prizes / Partners
-
-FAQ / page details
-
-Registration page
+F1 → Foundation / shared setup
+F2 → Navbar / Footer
+F3 → Hero
+F4 → About
+F5 → Tracks / How It Works
+F6 → Prizes / Partners
+F7 → FAQ / page details
+F8 → Registration page
 
 Backend
 
-Registration API
+B1 / B2 → Registration system + database
 
-Database integration
+Keep ownership boundaries clear, especially around shared files.
 
-Use the branch names agreed by the team. Keep shared files protected from unnecessary edits.
+✅ Pre-Merge Checklist
 
-Quality Checklist
+Before opening a PR:
 
-Before merging:
+Page loads without console errors
 
-Page loads without console errors.
+No horizontal overflow
 
-No horizontal overflow.
+Desktop layout works
 
-Mobile layout works.
+Mobile layout works
 
-Hero artwork/video stays visually stable.
+GSAP animations work correctly
 
-Lenis scrolling remains smooth.
+Lenis scrolling remains smooth
 
-ScrollTrigger animations do not duplicate on re-render.
+Reduced-motion behavior works
 
-prefers-reduced-motion is respected.
+Only intended files changed
 
-Registration validation works on both frontend and backend.
+No secrets are committed
 
-Duplicate registrations are handled correctly.
+Registration validation works
 
-No secrets are committed.
+Duplicate registrations are handled
 
-Only intended files are changed.
+API returns the expected status code
 
-Scope Principle
+🚀 Deployment
 
-Hack for Good is a frontend-heavy experience. Keep the frontend expressive and the backend intentionally small.
+Recommended deployment setup:
 
-Prefer:
+Frontend
+   ↓
+Vercel
 
-Excellent visual design
-+
-Reliable registration
-+
-Simple database
+Backend
+   ↓
+Render / Railway
 
-over adding backend systems that the event does not currently need.
+Database
+   ↓
+Supabase PostgreSQL
+
+The production frontend should communicate with the deployed API through the configured API base URL.
+
+📚 Documentation
+
+The repository also contains:
+
+DESIGN.md
+
+Use it as the source of truth for:
+
+visual language
+
+color system
+
+typography
+
+layout rules
+
+animation principles
+
+responsive behavior
+
+artwork handling
+
+accessibility
+
+performance constraints
+
+🧭 Project Philosophy
+
+Hack for Good is frontend-heavy by design.
+
+That means:
+
+Rich visual experience
+        +
+Purposeful motion
+        +
+Clear information
+        +
+Simple registration backend
+        =
+Hack for Good
+
+The frontend should be expressive.
+
+The backend should be boring, reliable, and secure.
+
+<div align="center">
+
+⚡ Hack for Good
+
+Build. Solve. Impact.
+
+Made by the Hack for Good team • Nexus (Coding Ninjas ITER)
+
+</div>
