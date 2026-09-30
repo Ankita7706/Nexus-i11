@@ -1,0 +1,165 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-display: 'Syne', sans-serif;
+    --font-body: 'Plus Jakarta Sans', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    /* Reusable Visual-Token System */
+    --background-dark: #07080a;
+    --surface-dark: #090a12;
+    --surface-elevated: #111218;
+    --text-primary: #ededed;
+    --text-secondary: #9ca3af;
+    --accent-primary: #f59e0b;
+    --accent-peach: #ffd3dd;
+    --accent-secondary: #e11d48;
+    --section-spacing: clamp(4.5rem, 7vw, 7.5rem);
+    --hero-height: 100svh;
+
+    /* Hero Typography & Color Tokens (CSS Variables) */
+    --hero-title-size: clamp(3.8rem, 10.8vw, 10.8rem);
+    --hero-forgood-size: clamp(2.3rem, 6.2vw, 6.2rem);
+    --hero-letter-spacing: -0.02em;
+    --hero-forgood-letter-spacing: 0.06em;
+    --hero-tagline-size: clamp(0.72rem, 1.15vw, 0.95rem);
+    --hero-tagline-letter-spacing: 0.22em;
+    --hero-title-color: #fbf7ee;
+    --hero-accent-crimson: #c42828;
+    --hero-accent-crimson-glow: rgba(196, 40, 40, 0.45);
+    --hero-button-height: 48px;
+    --hero-button-padding-x: 28px;
+    --hero-button-radius: 6px;
+    --hero-spacing: clamp(1rem, 2.5vh, 2.2rem);
+  }
+
+  html {
+    background-color: var(--background-dark);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  body {
+    font-family: var(--font-body), sans-serif;
+    background-color: var(--background-dark);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    max-width: 100vw;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, .font-display {
+    font-family: var(--font-display), sans-serif;
+  }
+
+  /* Universal accessible focus indicators */
+  :focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+  }
+}
+
+.font-display {
+  font-family: var(--font-display), sans-serif;
+}
+
+.font-mono {
+  font-family: var(--font-mono), monospace;
+}
+
+/* Custom cinematic framing utilities */
+.letterbox-top {
+  box-shadow: inset 0 20px 40px -10px rgba(0, 0, 0, 0.9);
+}
+
+/* Custom subtle scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background-dark);
+}
+::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border-radius: 0px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
+}
+
+/* Reduced motion global safety */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Hero Custom Hybrid Display Typography */
+.font-hero-title {
+  font-family: 'Syne', 'Cinzel', 'Bebas Neue', sans-serif;
+  font-weight: 800;
+  text-transform: uppercase;
+  line-height: 0.88;
+  letter-spacing: var(--hero-letter-spacing);
+}
+
+.font-hero-secondary {
+  font-family: 'Cinzel', 'Syne', sans-serif;
+  font-weight: 800;
+  text-transform: uppercase;
+  line-height: 1;
+  letter-spacing: var(--hero-forgood-letter-spacing);
+}
+
+.hero-text-depth {
+  text-shadow:
+    0 2px 3px rgba(0, 0, 0, 0.95),
+    0 6px 16px rgba(0, 0, 0, 0.8),
+    0 16px 36px rgba(0, 0, 0, 0.6);
+  filter: drop-shadow(0 0 1px rgba(20, 15, 10, 0.9));
+}
+
+.hero-brush-texture {
+  filter: url('#hand-paint-texture');
+}
+
+/* Gateway Scroll & Cinematic 3D Typography Stage */
+.gateway-stage {
+  perspective: 1200px;
+  perspective-origin: center center;
+}
+
+.hero-actions,
+.hero-tagline,
+.hero-title,
+.hero-event-info,
+.hero-navigation,
+.eyebrow {
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+
+/* Cinematic Living Media Background Drift (18-25s slow subtle scale 1.00 -> 1.06) */
+@keyframes cinematic-drift {
+  0% {
+    transform: scale(1.0) translate3d(0px, 0px, 0px);
+  }
+  50% {
+    transform: scale(1.06) translate3d(6px, -4px, 0px);
+  }
+  100% {
+    transform: scale(1.0) translate3d(0px, 0px, 0px);
+  }
+}
+
+.animate-cinematic-drift {
+  animation: cinematic-drift 22s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+}
+
+

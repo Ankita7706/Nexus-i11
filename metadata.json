@@ -1,0 +1,7 @@
+{
+  "name": "Hack for Good",
+  "description": "Cinematic, editorial landing page for Hack for Good inspired by high-impact visual storytelling and scroll-driven layered composition.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
