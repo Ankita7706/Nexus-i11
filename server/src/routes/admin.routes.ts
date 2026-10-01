@@ -121,7 +121,7 @@ router.get(
 // ----------------------------------------------------
 // 3. Organizer Browser Dashboard (HTML View)
 // ----------------------------------------------------
-router.get("/dashboard", async (req: Request, res: Response) => {
+router.get(["/", "/dashboard"], async (req: Request, res: Response) => {
   const configuredPassword = process.env.ADMIN_PASSWORD || "hackforgood2026";
   const passQuery = (req.query.password as string) || (req.query.key as string);
 
@@ -192,7 +192,7 @@ router.get("/dashboard", async (req: Request, res: Response) => {
       </div>
       ${
         isAuthenticated
-          ? `<a href="/api/admin/export-csv?password=${encodeURIComponent(
+          ? `<a href="${req.baseUrl}/export-csv?password=${encodeURIComponent(
               passQuery
             )}" class="btn btn-amber">&#128229; Download CSV for Excel</a>`
           : ""
@@ -207,7 +207,7 @@ router.get("/dashboard", async (req: Request, res: Response) => {
       <div class="card" style="max-width: 500px; margin: 40px auto; text-align: center;">
         <h2 style="margin-bottom: 8px;">Enter Admin Password</h2>
         <p style="font-size: 14px; color: #666; margin-bottom: 20px;">Please enter the organizer password to access the team list and export files.</p>
-        <form method="GET" action="/api/admin/dashboard">
+        <form method="GET" action="">
           <div class="form-row" style="margin: 0 auto;">
             <input type="password" name="password" placeholder="Admin password" required autofocus />
             <button type="submit" class="btn btn-primary">Unlock</button>
@@ -238,7 +238,7 @@ router.get("/dashboard", async (req: Request, res: Response) => {
       <div class="card">
         <div class="export-bar">
           <h2>Registered Teams (${registrations.length})</h2>
-          <a href="/api/admin/export-csv?password=${encodeURIComponent(
+          <a href="${req.baseUrl}/export-csv?password=${encodeURIComponent(
             passQuery
           )}" class="btn btn-primary">&#128229; Export All to CSV</a>
         </div>

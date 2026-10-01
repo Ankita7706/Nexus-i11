@@ -9,6 +9,7 @@ import adminRoutes from "./routes/admin.routes";
 dotenv.config();
 
 const app = express();
+app.set("trust proxy", 1);
 
 const PORT = process.env.PORT || 5000;
 
@@ -44,10 +45,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/register", registerRoutes);
-app.use("/api/admin", adminRoutes);
-app.get("/admin", (req, res) => {
-  res.redirect("/api/admin/dashboard");
-});
+app.use(["/api/admin", "/admin"], adminRoutes);
 
 app.use((req, res) => {
   res.status(404).json({
