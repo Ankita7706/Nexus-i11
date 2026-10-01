@@ -2,6 +2,7 @@ import { Router, Request, Response } from "express";
 import rateLimit from "express-rate-limit";
 import { supabase } from "../db/supabase";
 import { adminAuthMiddleware } from "../middleware/adminAuth";
+import { sendRegistrationConfirmationEmail } from "../services/email.service";
 
 const router = Router();
 
@@ -313,6 +314,29 @@ router.get(["/", "/dashboard"], async (req: Request, res: Response) => {
   `.trim();
 
   return res.status(200).send(html);
+});
+
+// ----------------------------------------------------
+// 4. Diagnostic Email Test Route (Password protected)
+// ----------------------------------------------------
+router.get("/test-email", adminAuthMiddleware, async (req: Request, res: Response) => {
+  const to = (req.query.to as string) || "swarnimrashi@gmail.com";
+  const result = await sendRegistrationConfirmationEmail({
+    teamName: "Diagnostic Test",
+    leaderName: "Admin",
+    email: to,
+  });
+  return res.json({
+    envCheck: {
+      hasUser: !!process.env.SMTP_USER,
+      hasPass: !!process.env.SMTP_PASS,
+      smtpHost: process.env.SMTP_HOST || "smtp.gmail.com",
+      smtpPort: process.env.SMTP_PORT || "587",
+      smtpSecure: process.env.SMTP_SECURE,
+      userPrefix: process.env.SMTP_USER ? process.env.SMTP_USER.slice(0, 5) + "***" : "missing",
+    },
+    result,
+  });
 });
 
 export default router;
