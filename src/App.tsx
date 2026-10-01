@@ -11,6 +11,7 @@ import HeritageJourney from './components/HeritageJourney/HeritageJourney';
 import StorySection from './components/StorySection';
 import CTA from './components/CTA';
 import Footer from './components/Footer';
+import Register from './pages/Register';
 
 // Code-split modals so they are only fetched when requested by the user
 const ApplicationModal = lazy(() => import('./components/ApplicationModal'));
@@ -20,6 +21,10 @@ export default function App() {
   useLenis();
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
   const [isTrailerModalOpen, setIsTrailerModalOpen] = useState(false);
+
+  if (window.location.pathname === '/register') {
+    return <Register />;
+  }
 
   return (
     <div className="min-h-screen bg-[#07080a] text-white selection:bg-[#f59e0b] selection:text-black overflow-x-hidden">
