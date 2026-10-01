@@ -3,6 +3,7 @@ import rateLimit from "express-rate-limit";
 
 import { supabase } from "../db/supabase";
 import { registrationSchema } from "../schemas/registration.schema";
+import { sendRegistrationConfirmationEmail } from "../services/email.service";
 
 const router = Router();
 
@@ -135,6 +136,19 @@ router.post("/", registerLimiter, async (req, res) => {
         message: "Could not save registration",
       });
     }
+
+    // -------------------------
+    // Send Confirmation Email (B2)
+    // -------------------------
+    sendRegistrationConfirmationEmail({
+      teamName: data.team_name,
+      leaderName: data.leader_name,
+      email: data.email,
+      track: data.track,
+      members: data.members,
+    }).catch((emailErr) => {
+      console.error("[RegisterRoute] Non-blocking confirmation email error:", emailErr);
+    });
 
     // -------------------------
     // Success

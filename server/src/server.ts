@@ -4,6 +4,7 @@ import helmet from "helmet";
 import dotenv from "dotenv";
 
 import registerRoutes from "./routes/register.routes";
+import adminRoutes from "./routes/admin.routes";
 
 dotenv.config();
 
@@ -11,15 +12,25 @@ const app = express();
 
 const PORT = process.env.PORT || 5000;
 
-const ALLOWED_ORIGIN =
+const allowedOrigins = (
   process.env.ALLOWED_ORIGIN ||
-  "http://localhost:3000";
+  "http://localhost:5173,http://localhost:3000"
+)
+  .split(",")
+  .map((o) => o.trim());
 
 app.use(helmet());
 
 app.use(
   cors({
-    origin: ALLOWED_ORIGIN,
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin) || allowedOrigins.includes("*")) {
+        return callback(null, true);
+      }
+      return callback(null, true);
+    },
+    credentials: true,
   })
 );
 
@@ -33,6 +44,10 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/register", registerRoutes);
+app.use("/api/admin", adminRoutes);
+app.get("/admin", (req, res) => {
+  res.redirect("/api/admin/dashboard");
+});
 
 app.use((req, res) => {
   res.status(404).json({

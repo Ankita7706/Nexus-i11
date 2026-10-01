@@ -7,10 +7,13 @@ const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY;
 
 if (!supabaseUrl || !supabaseSecretKey) {
-  throw new Error("Missing Supabase environment variables");
+  console.warn(
+    "⚠️ [Supabase] Warning: SUPABASE_URL or SUPABASE_SECRET_KEY is missing in server/.env.\n" +
+    "Database operations will fail until valid Supabase credentials are provided."
+  );
 }
 
 export const supabase = createClient(
-  supabaseUrl,
-  supabaseSecretKey
+  supabaseUrl || "https://placeholder.supabase.co",
+  supabaseSecretKey || "placeholder-key"
 );
