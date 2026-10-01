@@ -1,13 +1,31 @@
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-const resendApiKey = process.env.RESEND_API_KEY;
-const resendClient = resendApiKey ? new Resend(resendApiKey) : null;
+const SMTP_HOST = process.env.SMTP_HOST || "smtp.gmail.com";
+const SMTP_PORT = Number(process.env.SMTP_PORT) || 587;
+const SMTP_SECURE = process.env.SMTP_SECURE === "true"; // false for 587 (STARTTLS)
+const SMTP_USER = process.env.SMTP_USER;
+const SMTP_PASS = process.env.SMTP_PASS ? process.env.SMTP_PASS.replace(/\s+/g, "") : undefined;
 
 const FROM_EMAIL =
-  process.env.RESEND_FROM_EMAIL || "Hack for Good <onboarding@resend.dev>";
+  process.env.EMAIL_FROM ||
+  (SMTP_USER ? `Hack for Good <${SMTP_USER}>` : "Hack for Good <noreply@hackforgood.dev>");
+
+// Create reusable Nodemailer transporter if credentials are provided
+const transporter =
+  SMTP_USER && SMTP_PASS
+    ? nodemailer.createTransport({
+        host: SMTP_HOST,
+        port: SMTP_PORT,
+        secure: SMTP_SECURE,
+        auth: {
+          user: SMTP_USER,
+          pass: SMTP_PASS,
+        },
+      })
+    : null;
 
 export interface RegistrationEmailData {
   teamName: string;
@@ -32,13 +50,13 @@ function escapeHtml(str: string = ""): string {
 export async function sendRegistrationConfirmationEmail(
   data: RegistrationEmailData
 ): Promise<{ success: boolean; messageId?: string; error?: string }> {
-  if (!resendClient || !resendApiKey) {
+  if (!transporter) {
     console.warn(
-      "[EmailService] RESEND_API_KEY is not configured. Skipping confirmation email."
+      "[EmailService] SMTP_USER or SMTP_PASS is not configured in server/.env. Skipping email dispatch."
     );
     return {
       success: false,
-      error: "RESEND_API_KEY is missing",
+      error: "SMTP credentials not configured",
     };
   }
 
@@ -148,31 +166,23 @@ Nexus (Coding Ninjas ITER)
   `.trim();
 
   try {
-    const { data: resData, error } = await resendClient.emails.send({
+    const info = await transporter.sendMail({
       from: FROM_EMAIL,
-      to: [email],
+      to: email,
       subject: `Registration Confirmed: ${teamName} - Hack for Good`,
       text: textContent,
       html: htmlContent,
     });
 
-    if (error) {
-      console.error("[EmailService] Resend email delivery failed:", error);
-      return {
-        success: false,
-        error: error.message,
-      };
-    }
-
     console.log(
-      `[EmailService] Confirmation email sent successfully to ${email} (ID: ${resData?.id})`
+      `[EmailService] Confirmation email sent successfully to ${email} (MessageID: ${info.messageId})`
     );
     return {
       success: true,
-      messageId: resData?.id,
+      messageId: info.messageId,
     };
   } catch (err: any) {
-    console.error("[EmailService] Unexpected error sending email:", err);
+    console.error("[EmailService] Nodemailer error sending email:", err);
     return {
       success: false,
       error: err?.message || "Failed to send email",

@@ -7,9 +7,10 @@ import { sendRegistrationConfirmationEmail } from "../services/email.service";
 
 const router = Router();
 
+// Campus hackathon rate limiter (allows multiple teams registering on shared campus Wi-Fi)
 const registerLimiter = rateLimit({
   windowMs: 60 * 1000,
-  limit: 5,
+  limit: 30, // 30 requests per min (prevents campus NAT lockout)
   standardHeaders: true,
   legacyHeaders: false,
 
@@ -27,8 +28,9 @@ router.post("/", registerLimiter, async (req, res) => {
     // -------------------------
 
     if (
-      typeof req.body.website === "string" &&
-      req.body.website.trim() !== ""
+      req.body.website !== undefined &&
+      req.body.website !== null &&
+      String(req.body.website).trim() !== ""
     ) {
       // Pretend everything is fine.
       // Nothing is actually stored.

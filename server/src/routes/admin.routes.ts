@@ -1,15 +1,34 @@
 import { Router, Request, Response } from "express";
+import rateLimit from "express-rate-limit";
 import { supabase } from "../db/supabase";
 import { adminAuthMiddleware } from "../middleware/adminAuth";
 
 const router = Router();
 
-// Helper to escape values for CSV
+// Protect admin endpoints against brute-force attacks
+const adminLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 30, // 30 requests per 15 min window
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: "Too many admin requests. Please try again later.",
+  },
+});
+
+router.use(adminLimiter);
+
+// Helper to escape values for CSV and prevent CSV Formula Injection (CWE-1236)
 function escapeCsvValue(val: any): string {
   if (val === null || val === undefined) {
     return '""';
   }
-  const str = String(val);
+  let str = String(val);
+  // Prepend single quote if string begins with dangerous spreadsheet formula characters
+  if (/^[=\+\-@\t\r]/.test(str)) {
+    str = "'" + str;
+  }
   // Double internal quotes and wrap in quotes
   return `"${str.replace(/"/g, '""')}"`;
 }

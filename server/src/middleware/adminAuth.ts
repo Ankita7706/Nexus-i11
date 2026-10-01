@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import crypto from "crypto";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -41,7 +42,22 @@ export function adminAuthMiddleware(
       (req.query.key as string);
   }
 
-  if (!providedPassword || providedPassword !== configuredPassword) {
+  if (!providedPassword) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized: Invalid or missing admin password",
+    });
+  }
+
+  // Constant-time comparison to prevent side-channel timing attacks
+  const providedBuffer = Buffer.from(providedPassword);
+  const configuredBuffer = Buffer.from(configuredPassword);
+
+  const isMatch =
+    providedBuffer.length === configuredBuffer.length &&
+    crypto.timingSafeEqual(providedBuffer, configuredBuffer);
+
+  if (!isMatch) {
     return res.status(401).json({
       success: false,
       message: "Unauthorized: Invalid or missing admin password",
