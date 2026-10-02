@@ -14,12 +14,15 @@ export const registrationSchema = z.object({
   leaderName: z
     .string()
     .trim()
-    .min(1, "Leader name is required"),
+    .min(1, "Leader name is required")
+    .max(100, "Leader name cannot exceed 100 characters"),
 
   email: z
     .string()
     .trim()
-    .email("Enter a valid email address"),
+    .toLowerCase()
+    .email("Enter a valid email address")
+    .max(120, "Email cannot exceed 120 characters"),
 
   phone: z
     .string()
@@ -28,16 +31,19 @@ export const registrationSchema = z.object({
   college: z
     .string()
     .trim()
-    .min(1, "College and year are required"),
+    .min(1, "College and year are required")
+    .max(150, "College and year cannot exceed 150 characters"),
 
   track: z
     .string()
     .trim()
+    .max(100, "Track name cannot exceed 100 characters")
     .optional(),
 
   members: z
     .string()
     .trim()
+    .max(500, "Team members list cannot exceed 500 characters")
     .optional(),
 
   consent: z.literal(true, {

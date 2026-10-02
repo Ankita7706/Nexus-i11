@@ -1,13 +1,31 @@
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-const resendApiKey = process.env.RESEND_API_KEY;
-const resendClient = resendApiKey ? new Resend(resendApiKey) : null;
+const SMTP_HOST = process.env.SMTP_HOST || "smtp.gmail.com";
+const SMTP_PORT = Number(process.env.SMTP_PORT) || 587;
+const SMTP_SECURE = process.env.SMTP_SECURE === "true"; // false for 587 (STARTTLS)
+const SMTP_USER = process.env.SMTP_USER;
+const SMTP_PASS = process.env.SMTP_PASS ? process.env.SMTP_PASS.replace(/\s+/g, "") : undefined;
 
 const FROM_EMAIL =
-  process.env.RESEND_FROM_EMAIL || "Hack for Good <onboarding@resend.dev>";
+  process.env.EMAIL_FROM ||
+  (SMTP_USER ? `Hack for Good <${SMTP_USER}>` : "Hack for Good <noreply@hackforgood.dev>");
+
+// Create reusable Nodemailer transporter if credentials are provided
+const transporter =
+  SMTP_USER && SMTP_PASS
+    ? nodemailer.createTransport({
+        host: SMTP_HOST,
+        port: SMTP_PORT,
+        secure: SMTP_SECURE,
+        auth: {
+          user: SMTP_USER,
+          pass: SMTP_PASS,
+        },
+      })
+    : null;
 
 export interface RegistrationEmailData {
   teamName: string;
@@ -17,21 +35,74 @@ export interface RegistrationEmailData {
   members?: string | null;
 }
 
+// ----------------------------------------------------
+// HTML Sanitizer to prevent HTML injection / XSS
+// ----------------------------------------------------
+function escapeHtml(str: string = ""): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 export async function sendRegistrationConfirmationEmail(
   data: RegistrationEmailData
 ): Promise<{ success: boolean; messageId?: string; error?: string }> {
-  if (!resendClient || !resendApiKey) {
+  if (!transporter) {
     console.warn(
-      "[EmailService] RESEND_API_KEY is not configured. Skipping confirmation email."
+      "[EmailService] SMTP_USER or SMTP_PASS is not configured in server/.env. Skipping email dispatch."
     );
     return {
       success: false,
-      error: "RESEND_API_KEY is missing",
+      error: "SMTP credentials not configured",
     };
   }
 
   const { teamName, leaderName, email, track, members } = data;
 
+  // Sanitize all user-provided strings for HTML template
+  const safeTeamName = escapeHtml(teamName);
+  const safeLeaderName = escapeHtml(leaderName);
+  const safeEmail = escapeHtml(email);
+  const safeTrack = track ? escapeHtml(track) : null;
+  const safeMembers = members ? escapeHtml(members) : null;
+
+  // ----------------------------------------------------
+  // 1. Plain Text Fallback (Reduces Spam Score / RFC 2046)
+  // ----------------------------------------------------
+  const textContent = `
+HACK FOR GOOD - REGISTRATION CONFIRMED
+Nexus | Coding Ninjas ITER
+
+Welcome aboard, ${leaderName}!
+
+Your team registration for Hack for Good has been successfully received and recorded.
+
+Registration Details:
+- Team Name: ${teamName}
+- Team Leader: ${leaderName}
+- Registered Email: ${email}
+${track ? `- Preferred Track: ${track}\n` : ""}${members ? `- Team Members: ${members}\n` : ""}
+Important Next Steps:
+• Event Flow: Submit -> Kickoff (Sunday 7:00 PM) -> 24H Build -> Jury Evaluation & Handover.
+• Ensure all your teammates are ready with their development environment.
+• Join the official hackathon communications channel for real-time announcements.
+
+If you have any questions or need to make changes to your registration, feel free to reply directly to this email or reach out to the organizing team.
+
+Best regards,
+The Hack for Good Organizing Team
+Nexus (Coding Ninjas ITER)
+
+---
+© 2026 Hack for Good • Nexus (Coding Ninjas ITER) • Partnering for a better tomorrow
+`.trim();
+
+  // ----------------------------------------------------
+  // 2. Sanitized HTML Email Template
+  // ----------------------------------------------------
   const htmlContent = `
 <!DOCTYPE html>
 <html>
@@ -62,15 +133,15 @@ export async function sendRegistrationConfirmationEmail(
     </div>
     <div class="content">
       <div class="badge">Registration Confirmed</div>
-      <h2>Welcome aboard, ${leaderName}!</h2>
+      <h2>Welcome aboard, ${safeLeaderName}!</h2>
       <p>Your team registration for <strong>Hack for Good</strong> has been successfully received and recorded.</p>
       
       <div class="details">
-        <div class="details-row"><span class="details-label">Team Name:</span> ${teamName}</div>
-        <div class="details-row"><span class="details-label">Team Leader:</span> ${leaderName}</div>
-        <div class="details-row"><span class="details-label">Registered Email:</span> ${email}</div>
-        ${track ? `<div class="details-row"><span class="details-label">Preferred Track:</span> ${track}</div>` : ""}
-        ${members ? `<div class="details-row"><span class="details-label">Team Members:</span> ${members}</div>` : ""}
+        <div class="details-row"><span class="details-label">Team Name:</span> ${safeTeamName}</div>
+        <div class="details-row"><span class="details-label">Team Leader:</span> ${safeLeaderName}</div>
+        <div class="details-row"><span class="details-label">Registered Email:</span> ${safeEmail}</div>
+        ${safeTrack ? `<div class="details-row"><span class="details-label">Preferred Track:</span> ${safeTrack}</div>` : ""}
+        ${safeMembers ? `<div class="details-row"><span class="details-label">Team Members:</span> ${safeMembers}</div>` : ""}
       </div>
 
       <div class="timeline">
@@ -95,30 +166,23 @@ export async function sendRegistrationConfirmationEmail(
   `.trim();
 
   try {
-    const { data: resData, error } = await resendClient.emails.send({
+    const info = await transporter.sendMail({
       from: FROM_EMAIL,
-      to: [email],
+      to: email,
       subject: `Registration Confirmed: ${teamName} - Hack for Good`,
+      text: textContent,
       html: htmlContent,
     });
 
-    if (error) {
-      console.error("[EmailService] Resend email delivery failed:", error);
-      return {
-        success: false,
-        error: error.message,
-      };
-    }
-
     console.log(
-      `[EmailService] Confirmation email sent successfully to ${email} (ID: ${resData?.id})`
+      `[EmailService] Confirmation email sent successfully to ${email} (MessageID: ${info.messageId})`
     );
     return {
       success: true,
-      messageId: resData?.id,
+      messageId: info.messageId,
     };
   } catch (err: any) {
-    console.error("[EmailService] Unexpected error sending email:", err);
+    console.error("[EmailService] Nodemailer error sending email:", err);
     return {
       success: false,
       error: err?.message || "Failed to send email",
